@@ -7,7 +7,7 @@ function love.load()
     size = wW / rows
     cols = wH / size
 
-
+    enableInfection = false
     for i = 1, rows do
         grids[i] = {}
         for j = 1, cols do
@@ -22,6 +22,19 @@ function love.load()
 
     love.window.setMode(wW, wH)
 
+    function findEmptyCell()
+        for i = 1, rows do
+            for j = 1, cols do
+                grids[i][j] = {
+                    x = (i - 1) * size,
+                    y = (j - 1) * size,
+                    holding = nil
+
+                }
+            end
+        end
+    end
+
     particles = {}
     for i = 1, 30 do
         posX = (love.math.random(1, rows))
@@ -30,7 +43,10 @@ function love.load()
         grids[posX][posY].holding = particle
     end
 
-    createParticle("ants", love.math.random(1, 30), love.math.random(1, 30), 1, 1, {0,1,0})
+
+    aX, aY = love.math.random(1, 30), love.math.random(1, 30)
+    local particle = createParticle("ants", aX, aY, 1, 1, { 0, 1, 0 })
+    grids[aX][aY].holding = particle
 end
 
 function love.update(dt)
@@ -91,9 +107,9 @@ function love.draw()
     end
 end
 
-function love.mouspressed(x, y, button)
-    if button == "1" then
-        createParticle("")
+function love.mousepressed(x, y, button)
+    if button == 1 then
+        enableInfection = true
     end
 end
 
@@ -103,7 +119,7 @@ function createParticle(type, gX, gY, xDir, yDir, color)
         gY = gY or 1,
         pX = gX or 1,
         pY = gY or 1,
-        color = { 1, 1, 1 } or color,
+        color = color or { 1, 1, 1 },
         xImpDir = xDir or 1,
         yImpDir = yDir or 1,
         acceleration = 100,
