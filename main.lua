@@ -36,16 +36,20 @@ function love.load()
     end
 
     particles = {}
-    for i = 1, 30 do
+    for i = 1, 60 do
         posX = (love.math.random(1, rows))
         posY = (love.math.random(1, cols))
         local particle = createParticle("ants", posX, posY, 1, 1)
         grids[posX][posY].holding = particle
     end
 
+    function spreadColor(self, other)
+        other.color = self.color
+        other.onCollide = spreadColor
+    end
 
     aX, aY = love.math.random(1, 30), love.math.random(1, 30)
-    local particle = createParticle("ants", aX, aY, 1, 1, { 0, 1, 0 })
+    local particle = createParticle("ants", aX, aY, 1, 1, { 0, 1, 0 }, spreadColor)
     grids[aX][aY].holding = particle
 end
 
@@ -87,15 +91,31 @@ function love.update(dt)
             v.gX = math.floor(v.pX)
             v.gY = math.floor(v.pY)
 
-            -- update grid occupancy if the particle moved to a new cell
-            if v.gX ~= oldGX or v.gY ~= oldGY then
-                if grids[oldGX] and grids[oldGX][oldGY] and grids[oldGX][oldGY].holding == v then
-                    grids[oldGX][oldGY].holding = nil
-                end
-                if grids[v.gX] and grids[v.gX][v.gY] then
-                    grids[v.gX][v.gY].holding = v
+            local newGX = v.gX
+            local newGY = v.gY
+
+            if newGX ~= oldGX or newGY ~= oldGY then
+                local targetCell = grids[newGX] and grids[newGX][newGY]
+
+                if targetCell and targetCell.holding and targetCell.holding ~= v then
+                    local hP = targetCell.holding
+                    if v.onCollide then
+                        v.onCollide(v, hP)
+                    end
+                
+                -- update grid occupancy if the particle moved to a new cell
+                else
+                    if grids[oldGX] and grids[oldGX][oldGY] and grids[oldGX][oldGY].holding == v then
+                        grids[oldGX][oldGY].holding = nil
+                    end
+                    if grids[v.gX] and grids[v.gX][v.gY] then
+                        grids[v.gX][v.gY].holding = v
+                    end
+                    v.gX, v.gY = newGX, newGY
                 end
             end
+
+
         end
     end
 end
@@ -113,7 +133,7 @@ function love.mousepressed(x, y, button)
     end
 end
 
-function createParticle(type, gX, gY, xDir, yDir, color)
+function createParticle(type, gX, gY, xDir, yDir, color, onCollide)
     local particle = {
         gX = gX or 1,
         gY = gY or 1,
@@ -123,7 +143,8 @@ function createParticle(type, gX, gY, xDir, yDir, color)
         xImpDir = xDir or 1,
         yImpDir = yDir or 1,
         acceleration = 100,
-        type = type or "ants"
+        type = type or "ants",
+        onCollide = onCollide
     }
     table.insert(particles, particle)
     return particle
