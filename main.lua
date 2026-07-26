@@ -54,22 +54,16 @@ function love.load()
         grids[posX][posY].holding = particle
     end
 
-    function spreadColor(self, other)
-        other.color = self.color
-        other.type = "infected"
-        other.onCollide = spreadColor
-    end
-
     aX, aY = love.math.random(1, 30), love.math.random(1, 30)
-    local particle = createParticle("infected", aX, aY, 1, 1, { 0, 1, 0 }, spreadColor)
+    local particle = createParticle("infected", aX, aY, 1, 1, { 0, 1, 0 }, randomMovement, spreadColor)
     grids[aX][aY].holding = particle
 end
 
 function love.update(dt)
     for i, v in ipairs(particles) do
-        local xImp = love.math.random() * 2 - 1
-        local yImp = love.math.random() * 2 - 1
-
+        local xImp, yImp
+        
+        if v.movementType then  xImp, yImp = v.movementType() else  xImp, yImp = randomMovement() end
         local oldGX, oldGY = v.gX, v.gY
 
         -- pick a direction, checking bounds safely
@@ -127,8 +121,7 @@ function love.update(dt)
         end
     end
     if countParticleType("infected") ~= #particles then
-            time = time + dt
-
+        time = time + dt
     end
 end
 
@@ -138,16 +131,16 @@ function love.draw()
         love.graphics.rectangle("fill", math.floor(v.gX * size), math.floor(v.gY * size), size, size)
     end
     love.graphics.setColor(1, 1, 1)
-    love.graphics.print(countParticleType("infected") .. "/" .. #particles.." | Time: "..math.floor(time))
+    love.graphics.print(countParticleType("infected") .. "/" .. #particles .. " | Time: " .. math.floor(time))
 end
 
 function love.mousepressed(x, y, button)
     if button == 1 then
-        enableInfection = true
+        enableInfection = not enableInfection
     end
 end
 
-function createParticle(type, gX, gY, xDir, yDir, color, onCollide)
+function createParticle(type, gX, gY, xDir, yDir, color, movementType, onCollide)
     local particle = {
         gX = gX or 1,
         gY = gY or 1,
@@ -158,6 +151,7 @@ function createParticle(type, gX, gY, xDir, yDir, color, onCollide)
         yImpDir = yDir or 1,
         acceleration = 100,
         type = type or "ants",
+        movementType = movementType,
         onCollide = onCollide
     }
     table.insert(particles, particle)
