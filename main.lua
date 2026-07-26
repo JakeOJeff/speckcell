@@ -35,8 +35,19 @@ function love.load()
         end
     end
 
+    function countParticleType(type)
+        local count = 0
+        for i = 1, #particles do
+            if particles[i].type == type then
+                count = count + 1
+            end
+        end
+        return count
+    end
+
     particles = {}
-    for i = 1, 60 do
+    time = 0
+    for i = 1, 120 do
         posX = (love.math.random(1, rows))
         posY = (love.math.random(1, cols))
         local particle = createParticle("ants", posX, posY, 1, 1)
@@ -45,78 +56,79 @@ function love.load()
 
     function spreadColor(self, other)
         other.color = self.color
+        other.type = "infected"
         other.onCollide = spreadColor
     end
 
     aX, aY = love.math.random(1, 30), love.math.random(1, 30)
-    local particle = createParticle("ants", aX, aY, 1, 1, { 0, 1, 0 }, spreadColor)
+    local particle = createParticle("infected", aX, aY, 1, 1, { 0, 1, 0 }, spreadColor)
     grids[aX][aY].holding = particle
 end
 
 function love.update(dt)
     for i, v in ipairs(particles) do
-        if v.type == "ants" then
-            local xImp = love.math.random() * 2 - 1
-            local yImp = love.math.random() * 2 - 1
+        local xImp = love.math.random() * 2 - 1
+        local yImp = love.math.random() * 2 - 1
 
-            local oldGX, oldGY = v.gX, v.gY
+        local oldGX, oldGY = v.gX, v.gY
 
-            -- pick a direction, checking bounds safely
-            local function inBounds(gx, gy)
-                return grids[gx] ~= nil and grids[gx][gy] ~= nil
-            end
-
-            if inBounds(v.gX - xImp, v.gY - yImp) then
-                v.xImpDir = xImp
-                v.yImpDir = yImp
-            elseif inBounds(v.gX - xImp, v.gY + yImp) then
-                v.xImpDir = xImp
-                v.yImpDir = -yImp
-            elseif inBounds(v.gX + xImp, v.gY + yImp) then
-                v.xImpDir = -xImp
-                v.yImpDir = yImp
-            else
-                v.xImpDir = -xImp
-                v.yImpDir = -yImp
-            end
-
-            -- move in continuous space
-            v.pX = v.pX + v.acceleration * v.xImpDir * dt
-            v.pY = v.pY + v.acceleration * v.yImpDir * dt
-
-            -- clamp to grid bounds (in "cell units")
-            v.pX = math.max(1, math.min(rows, v.pX))
-            v.pY = math.max(1, math.min(cols, v.pY))
-
-            v.gX = math.floor(v.pX)
-            v.gY = math.floor(v.pY)
-
-            local newGX = v.gX
-            local newGY = v.gY
-
-            if newGX ~= oldGX or newGY ~= oldGY then
-                local targetCell = grids[newGX] and grids[newGX][newGY]
-
-                if targetCell and targetCell.holding and targetCell.holding ~= v then
-                    local hP = targetCell.holding
-                    if v.onCollide then
-                        v.onCollide(v, hP)
-                    end
-                
-                -- update grid occupancy if the particle moved to a new cell
-                else
-                    if grids[oldGX] and grids[oldGX][oldGY] and grids[oldGX][oldGY].holding == v then
-                        grids[oldGX][oldGY].holding = nil
-                    end
-                    if grids[v.gX] and grids[v.gX][v.gY] then
-                        grids[v.gX][v.gY].holding = v
-                    end
-                    v.gX, v.gY = newGX, newGY
-                end
-            end
-
-
+        -- pick a direction, checking bounds safely
+        local function inBounds(gx, gy)
+            return grids[gx] ~= nil and grids[gx][gy] ~= nil
         end
+
+        if inBounds(v.gX - xImp, v.gY - yImp) then
+            v.xImpDir = xImp
+            v.yImpDir = yImp
+        elseif inBounds(v.gX - xImp, v.gY + yImp) then
+            v.xImpDir = xImp
+            v.yImpDir = -yImp
+        elseif inBounds(v.gX + xImp, v.gY + yImp) then
+            v.xImpDir = -xImp
+            v.yImpDir = yImp
+        else
+            v.xImpDir = -xImp
+            v.yImpDir = -yImp
+        end
+
+        -- move in continuous space
+        v.pX = v.pX + v.acceleration * v.xImpDir * dt
+        v.pY = v.pY + v.acceleration * v.yImpDir * dt
+
+        -- clamp to grid bounds (in "cell units")
+        v.pX = math.max(1, math.min(rows, v.pX))
+        v.pY = math.max(1, math.min(cols, v.pY))
+
+        v.gX = math.floor(v.pX)
+        v.gY = math.floor(v.pY)
+
+        local newGX = v.gX
+        local newGY = v.gY
+
+        if newGX ~= oldGX or newGY ~= oldGY then
+            local targetCell = grids[newGX] and grids[newGX][newGY]
+
+            if targetCell and targetCell.holding and targetCell.holding ~= v then
+                local hP = targetCell.holding
+                if v.onCollide then
+                    v.onCollide(v, hP)
+                end
+
+                -- update grid occupancy if the particle moved to a new cell
+            else
+                if grids[oldGX] and grids[oldGX][oldGY] and grids[oldGX][oldGY].holding == v then
+                    grids[oldGX][oldGY].holding = nil
+                end
+                if grids[v.gX] and grids[v.gX][v.gY] then
+                    grids[v.gX][v.gY].holding = v
+                end
+                v.gX, v.gY = newGX, newGY
+            end
+        end
+    end
+    if countParticleType("infected") ~= #particles then
+            time = time + dt
+
     end
 end
 
@@ -125,6 +137,8 @@ function love.draw()
         love.graphics.setColor(v.color)
         love.graphics.rectangle("fill", math.floor(v.gX * size), math.floor(v.gY * size), size, size)
     end
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.print(countParticleType("infected") .. "/" .. #particles.." | Time: "..math.floor(time))
 end
 
 function love.mousepressed(x, y, button)
