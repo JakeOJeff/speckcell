@@ -7,3 +7,9 @@ function spreadColor(self, other)
         other.onCollide = spreadColor
     end
 end
+
+function eatAndReproduce(self, other)
+    if other.type == "food" then
+        
+    end
+end

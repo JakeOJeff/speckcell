@@ -1,6 +1,10 @@
+require "movements"
+require "helper"
+require "collide"
+
 function love.load()
-    wW = 500
-    wH = 500
+    wW = 1000
+    wH = 1000
 
     grids = {}
     rows = 100
@@ -47,7 +51,7 @@ function love.load()
 
     particles = {}
     time = 0
-    for i = 1, 120 do
+    for i = 1, 30 do
         posX = (love.math.random(1, rows))
         posY = (love.math.random(1, cols))
         local particle = createParticle("ants", posX, posY, 1, 1)
@@ -62,8 +66,8 @@ end
 function love.update(dt)
     for i, v in ipairs(particles) do
         local xImp, yImp
-        
-        if v.movementType then  xImp, yImp = v.movementType() else  xImp, yImp = randomMovement() end
+
+        if v.movementType then xImp, yImp = v.movementType() else xImp, yImp = randomMovement() end
         local oldGX, oldGY = v.gX, v.gY
 
         -- pick a direction, checking bounds safely
@@ -104,7 +108,7 @@ function love.update(dt)
 
             if targetCell and targetCell.holding and targetCell.holding ~= v then
                 local hP = targetCell.holding
-                if v.onCollide then
+                if v.onCollide and v.collidable then
                     v.onCollide(v, hP)
                 end
 
@@ -137,6 +141,15 @@ end
 function love.mousepressed(x, y, button)
     if button == 1 then
         enableInfection = not enableInfection
+        for i, v in ipairs(particles) do
+            if v.type == "ants" then
+                if enableInfection then
+                    v.collidable = true
+                else
+                    v.collidable = false
+                end
+            end
+        end
     end
 end
 
@@ -149,10 +162,15 @@ function createParticle(type, gX, gY, xDir, yDir, color, movementType, onCollide
         color = color or { 1, 1, 1 },
         xImpDir = xDir or 1,
         yImpDir = yDir or 1,
-        acceleration = 100,
+        acceleration = 50,
         type = type or "ants",
+        collidable = true,
+        items = {}, -- items the creatures carry or have consumed
+        locations = {}, -- Locations the creatures or whatever remembers
+
         movementType = movementType,
-        onCollide = onCollide
+        onCollide = onCollide,
+
     }
     table.insert(particles, particle)
     return particle
