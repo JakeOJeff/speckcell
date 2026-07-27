@@ -7,7 +7,7 @@ function love.load()
     wH = 1000
 
     grids = {}
-    rows = 100
+    rows = 500
     size = wW / rows
     cols = wH / size
 
@@ -26,32 +26,10 @@ function love.load()
 
     love.window.setMode(wW, wH)
 
-    function findEmptyCell()
-        for i = 1, rows do
-            for j = 1, cols do
-                grids[i][j] = {
-                    x = (i - 1) * size,
-                    y = (j - 1) * size,
-                    holding = nil
-
-                }
-            end
-        end
-    end
-
-    function countParticleType(type)
-        local count = 0
-        for i = 1, #particles do
-            if particles[i].type == type then
-                count = count + 1
-            end
-        end
-        return count
-    end
 
     particles = {}
     time = 0
-    for i = 1, 30 do
+    for i = 1, 1000 do
         posX = (love.math.random(1, rows))
         posY = (love.math.random(1, cols))
         local particle = createParticle("ants", posX, posY, 1, 1)
@@ -59,7 +37,7 @@ function love.load()
     end
 
     aX, aY = love.math.random(1, 30), love.math.random(1, 30)
-    local particle = createParticle("infected", aX, aY, 1, 1, { 0, 1, 0 }, randomMovement, spreadColor)
+    local particle = createParticle("infected", aX, aY, 1, 1, { 0, 1, 0 }, targetedMovement, spreadColor)
     grids[aX][aY].holding = particle
 end
 
@@ -67,7 +45,17 @@ function love.update(dt)
     for i, v in ipairs(particles) do
         local xImp, yImp
 
-        if v.movementType then xImp, yImp = v.movementType() else xImp, yImp = randomMovement() end
+        local targetX, targetY = v.pX, v.pY -- default: don't move if no target
+        if v.type == "infected" then
+            local target = nearestParticle(v, "ants")
+            if target then targetX, targetY = target.pX, target.pY end
+        end
+
+        if v.movementType then
+            xImp, yImp = v.movementType(v, targetX, targetY)
+        else
+            xImp, yImp = randomMovement(v)
+        end
         local oldGX, oldGY = v.gX, v.gY
 
         -- pick a direction, checking bounds safely
@@ -75,13 +63,13 @@ function love.update(dt)
             return grids[gx] ~= nil and grids[gx][gy] ~= nil
         end
 
-        if inBounds(v.gX - xImp, v.gY - yImp) then
+        if inBounds(v.gX + xImp, v.gY + yImp) then
             v.xImpDir = xImp
             v.yImpDir = yImp
-        elseif inBounds(v.gX - xImp, v.gY + yImp) then
+        elseif inBounds(v.gX + xImp, v.gY - yImp) then
             v.xImpDir = xImp
             v.yImpDir = -yImp
-        elseif inBounds(v.gX + xImp, v.gY + yImp) then
+        elseif inBounds(v.gX - xImp, v.gY + yImp) then
             v.xImpDir = -xImp
             v.yImpDir = yImp
         else
@@ -165,7 +153,7 @@ function createParticle(type, gX, gY, xDir, yDir, color, movementType, onCollide
         acceleration = 50,
         type = type or "ants",
         collidable = true,
-        items = {}, -- items the creatures carry or have consumed
+        items = {},     -- items the creatures carry or have consumed
         locations = {}, -- Locations the creatures or whatever remembers
 
         movementType = movementType,

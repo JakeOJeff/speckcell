@@ -5,6 +5,12 @@ function spreadColor(self, other)
         other.color = self.color
         other.type = "infected"
         other.onCollide = spreadColor
+        if countParticleType("ants") > 0 then
+            other.movementType = targetedMovement
+        else
+            other.movementType = randomMovement
+        end
+        
     end
 end
 
