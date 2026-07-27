@@ -1,6 +1,7 @@
 require "movements"
 require "helper"
 require "collide"
+require "target"
 
 function love.load()
     wW = 1000
@@ -34,12 +35,13 @@ function love.load()
     for i = 1, 1000 do
         posX = (love.math.random(1, rows))
         posY = (love.math.random(1, cols))
-        local particle = createParticle("ants", posX, posY, 1, 1)
+        local particle = createParticle("life", posX, posY, 1, 1)
         grids[posX][posY].holding = particle
     end
 
     aX, aY = love.math.random(1, 30), love.math.random(1, 30)
-    local particle = createParticle("infected", aX, aY, 1, 1, { 0, 1, 0 }, targetedMovement, spreadColor)
+    local particle = createParticle("infected", aX, aY, 1, 1, { 0, 1, 0 }, targetedMovement, spreadColor, findUninfected)
+    particle.target = "life"
     grids[aX][aY].holding = particle
 end
 
@@ -47,13 +49,8 @@ function love.update(dt)
     for i, v in ipairs(particles) do
         local xImp, yImp
 
-        local targetX, targetY = v.pX, v.pY -- default: don't move if no target
-        if v.type == "infected" then
-            local target = nearestParticle(v, "ants")
-            if target then targetX, targetY = target.pX, target.pY end
-        end
-
-        if v.movementType then
+        if v.movementType and v.targetType then
+            local targetX, targetY = v.targetType(v, v.target)
             xImp, yImp = v.movementType(v, targetX, targetY)
         else
             xImp, yImp = randomMovement(v)
@@ -132,7 +129,7 @@ function love.mousepressed(x, y, button)
     if button == 1 then
         enableInfection = not enableInfection
         for i, v in ipairs(particles) do
-            if v.type == "ants" then
+            if v.type == "life" then
                 if enableInfection then
                     v.collidable = true
                 else
@@ -143,7 +140,7 @@ function love.mousepressed(x, y, button)
     end
 end
 
-function createParticle(type, gX, gY, xDir, yDir, color, movementType, onCollide)
+function createParticle(type, gX, gY, xDir, yDir, color, movementType, onCollide, targetType)
     local particle = {
         gX = gX or 1,
         gY = gY or 1,
@@ -153,13 +150,15 @@ function createParticle(type, gX, gY, xDir, yDir, color, movementType, onCollide
         xImpDir = xDir or 1,
         yImpDir = yDir or 1,
         acceleration = 100,
-        type = type or "ants",
+        type = type or "life",
         collidable = true,
+        target = nil,
         items = {},     -- items the creatures carry or have consumed
         locations = {}, -- Locations the creatures or whatever remembers
 
         movementType = movementType,
         onCollide = onCollide,
+        targetType = targetType
 
     }
     table.insert(particles, particle)
