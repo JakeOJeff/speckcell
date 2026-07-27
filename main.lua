@@ -8,7 +8,7 @@ function love.load()
     wH = 1000
 
     grids = {}
-    rows = 500
+    rows = 100
     size = wW / rows
     cols = wH / size
 
@@ -32,7 +32,7 @@ function love.load()
 
     particles = {}
     time = 0
-    for i = 1, 1000 do
+    for i = 1, 30 do
         posX = (love.math.random(1, rows))
         posY = (love.math.random(1, cols))
         local particle = createParticle("life", posX, posY, 1, 1)
@@ -149,7 +149,7 @@ function createParticle(type, gX, gY, xDir, yDir, color, movementType, onCollide
         color = color or { 1, 1, 1 },
         xImpDir = xDir or 1,
         yImpDir = yDir or 1,
-        acceleration = 100,
+        acceleration = 10,
         type = type or "life",
         collidable = true,
         target = nil,
