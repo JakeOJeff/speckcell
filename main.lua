@@ -8,7 +8,7 @@ function love.load()
     wH = 1000
 
     grids = {}
-    rows = 100
+    rows = 500
     size = wW / rows
     cols = wH / size
 
@@ -29,10 +29,10 @@ function love.load()
 
     love.window.setMode(wW, wH)
 
-
     particles = {}
     time = 0
-    for i = 1, 30 do
+    
+    for i = 1, 3000 do
         posX = (love.math.random(1, rows))
         posY = (love.math.random(1, cols))
         local particle = createParticle("life", posX, posY, 1, 1)
@@ -98,7 +98,6 @@ function love.update(dt)
                 if v.onCollide and v.collidable then
                     v.onCollide(v, hP)
                 end
-
                 -- update grid occupancy if the particle moved to a new cell
             else
                 if grids[oldGX] and grids[oldGX][oldGY] and grids[oldGX][oldGY].holding == v then
@@ -149,7 +148,7 @@ function createParticle(type, gX, gY, xDir, yDir, color, movementType, onCollide
         color = color or { 1, 1, 1 },
         xImpDir = xDir or 1,
         yImpDir = yDir or 1,
-        acceleration = 10,
+        acceleration = 100,
         type = type or "life",
         collidable = true,
         target = nil,
@@ -159,7 +158,6 @@ function createParticle(type, gX, gY, xDir, yDir, color, movementType, onCollide
         movementType = movementType,
         onCollide = onCollide,
         targetType = targetType
-
     }
     table.insert(particles, particle)
     return particle
