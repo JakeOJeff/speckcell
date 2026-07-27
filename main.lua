@@ -11,6 +11,8 @@ function love.load()
     size = wW / rows
     cols = wH / size
 
+    infectAudio = love.audio.newSource("audio/infect.mp3", "static")
+
     enableInfection = false
     for i = 1, rows do
         grids[i] = {}
@@ -86,7 +88,7 @@ function love.update(dt)
         v.pY = math.max(1, math.min(cols, v.pY))
 
         v.gX = math.floor(v.pX)
-        v.gY = math.floor(v.pY)
+        v.gY = math.floor(v.pY) 
 
         local newGX = v.gX
         local newGY = v.gY
@@ -150,7 +152,7 @@ function createParticle(type, gX, gY, xDir, yDir, color, movementType, onCollide
         color = color or { 1, 1, 1 },
         xImpDir = xDir or 1,
         yImpDir = yDir or 1,
-        acceleration = 50,
+        acceleration = 100,
         type = type or "ants",
         collidable = true,
         items = {},     -- items the creatures carry or have consumed
