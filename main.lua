@@ -1,15 +1,20 @@
+particles = {}
+particle = require "particle"
+require "movements"
+require "target"
+
 require "helper"
 require "collide"
-require "target"
 
 function love.load()
     wW = 1000
     wH = 1000
 
     grids = {}
-    rows = 500
+    rows = 250
     size = wW / rows
     cols = wH / size
+    love.window.setMode(wW, wH)
 
     infectAudio = love.audio.newSource("audio/infect.mp3", "static")
 
@@ -21,20 +26,13 @@ function love.load()
                 x = (i - 1) * size,
                 y = (j - 1) * size,
                 holding = nil
-
             }
         end
     end
 
-    love.window.setMode(wW, wH)
-
-    particles = {}
-    particle = require "particle"
-    require "movements"
 
     time = 0
-
-    for i = 1, 3000 do
+    for i = 1, 300 do
         posX = (love.math.random(1, rows))
         posY = (love.math.random(1, cols))
         local part = particle:new("life", posX, posY, 1, 1)
@@ -42,7 +40,11 @@ function love.load()
     end
 
     aX, aY = love.math.random(1, 30), love.math.random(1, 30)
-    local part = particle:new("infected", aX, aY, 1, 1, { 0, 1, 0 }, particle.targetedMovement, spreadColor, findUninfected)
+    local part = particle:new("infected", aX, aY, 1, 1, { 0, 1, 0 }, 
+        particle.targetedMovement,
+        spreadColor,
+        particle.findUninfectedTarget
+    )
     part.target = "life"
     grids[aX][aY].holding = part
 end
@@ -74,4 +76,3 @@ function love.mousepressed(x, y, button)
         end
     end
 end
-

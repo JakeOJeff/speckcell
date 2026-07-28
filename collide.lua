@@ -6,7 +6,7 @@ function spreadColor(self, other)
         other.type = "infected"
         other.onCollide = spreadColor
         other.target = "life"
-        other.targetType = findUninfected
+        other.targetType = particle.findUninfectedTarget
         if countParticleType("life") > 0 then
             other.movementType = particle.targetedMovement
         else
