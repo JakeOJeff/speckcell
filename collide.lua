@@ -8,9 +8,9 @@ function spreadColor(self, other)
         other.target = "life"
         other.targetType = findUninfected
         if countParticleType("life") > 0 then
-            other.movementType = targetedMovement
+            other.movementType = particle.targetedMovement
         else
-            other.movementType = randomMovement
+            other.movementType = particle.randomMovement
         end
         
     end

@@ -1,4 +1,3 @@
-require "movements"
 require "helper"
 require "collide"
 require "target"
@@ -31,6 +30,8 @@ function love.load()
 
     particles = {}
     particle = require "particle"
+    require "movements"
+
     time = 0
 
     for i = 1, 3000 do
@@ -41,7 +42,7 @@ function love.load()
     end
 
     aX, aY = love.math.random(1, 30), love.math.random(1, 30)
-    local part = particle:new("infected", aX, aY, 1, 1, { 0, 1, 0 }, targetedMovement, spreadColor, findUninfected)
+    local part = particle:new("infected", aX, aY, 1, 1, { 0, 1, 0 }, particle.targetedMovement, spreadColor, findUninfected)
     part.target = "life"
     grids[aX][aY].holding = part
 end

@@ -29,9 +29,9 @@ function particle:update(dt)
 
     if self.movementType and self.targetType then
         local targetX, targetY = self.targetType(self, self.target)
-        xImp, yImp = self.movementType(self, targetX, targetY)
+        xImp, yImp = self:movementType(targetX, targetY)
     else
-        xImp, yImp = randomMovement(self)
+        xImp, yImp = self:randomMovement()
     end
     local oldGX, oldGY = self.gX, self.gY
 
