@@ -11,7 +11,7 @@ function love.load()
     wH = 1000
 
     grids = {}
-    rows = 250
+    rows = 500
     size = wW / rows
     cols = wH / size
     love.window.setMode(wW, wH)
@@ -30,16 +30,15 @@ function love.load()
         end
     end
 
-
     time = 0
-    for i = 1, 300 do
+    for i = 1, 3000 do
         posX = (love.math.random(1, rows))
         posY = (love.math.random(1, cols))
         local part = particle:new("life", posX, posY, 1, 1)
         grids[posX][posY].holding = part
     end
 
-    aX, aY = love.math.random(1, 30), love.math.random(1, 30)
+    aX, aY = love.math.random(1, rows), love.math.random(1, cols)
     local part = particle:new("infected", aX, aY, 1, 1, { 0, 1, 0 }, 
         particle.targetedMovement,
         spreadColor,
