@@ -35,11 +35,12 @@ function love.load()
         posX = (love.math.random(1, rows))
         posY = (love.math.random(1, cols))
         local part = particle:new("life", posX, posY, 1, 1)
+        
         grids[posX][posY].holding = part
     end
 
     aX, aY = love.math.random(1, rows), love.math.random(1, cols)
-    local part = particle:new("infected", aX, aY, 1, 1, { 0, 1, 0 }, 
+    local part = particle:new("infected", aX, aY, 1, 1, { 0, 1, 0 },
         particle.targetedMovement,
         spreadColor,
         particle.findUninfectedTarget
@@ -63,15 +64,23 @@ end
 
 function love.mousepressed(x, y, button)
     if button == 1 then
-        enableInfection = not enableInfection
-        for i, v in ipairs(particles) do
-            if v.type == "life" then
-                if enableInfection then
-                    v.collidable = true
-                else
-                    v.collidable = false
-                end
-            end
-        end
+        -- enableInfection = not enableInfection
+        -- for i, v in ipairs(particles) do
+        --     if v.type == "life" then
+        --         if enableInfection then
+        --             v.collidable = true
+        --         else
+        --             v.collidable = false
+        --         end
+        --     end
+        -- end
+        local pX, pY = x / size, y / size
+        local part = particle:new("food", pX, pY, 1, 1, { 0, 1, 1 },
+            particle.targetedMovement,
+            spreadColor,
+            particle.findUninfectedTarget
+        )
+        part.target = "life"
+        grids[aX][aY].holding = part
     end
 end

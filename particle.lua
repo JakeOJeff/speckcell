@@ -27,7 +27,7 @@ end
 function particle:update(dt)
     local xImp, yImp
 
-    if self.movementType and self.targetType   and love.math.random(1, 3) ~= 1 then
+    if self.movementType and self.targetType and love.math.random(1, 2) ~= 1 then
         local targetX, targetY = self.targetType(self, self.target)
         xImp, yImp = self:movementType(targetX, targetY)
     else
