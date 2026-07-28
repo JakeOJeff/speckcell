@@ -1,4 +1,4 @@
-function particle:randomMovement(targetX, targetY)
+function particle:randomMovement()
     return love.math.random() * 2 - 1, love.math.random() * 2 - 1
 end
 

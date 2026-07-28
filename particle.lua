@@ -13,6 +13,7 @@ function particle:new(type, gX, gY, xDir, yDir, color, movementType, onCollide, 
     self.acceleration = 100
     self.type = type or "life"
     self.collidable = true
+    self.movable = true
     self.target = nil
     self.items = {}     -- items the creatures carry or have consumed
     self.locations = {} -- Locations the creatures or whatever remembers
