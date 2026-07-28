@@ -30,32 +30,31 @@ function love.load()
     love.window.setMode(wW, wH)
 
     particles = {}
+    particle = require "particle"
     time = 0
 
     for i = 1, 3000 do
         posX = (love.math.random(1, rows))
         posY = (love.math.random(1, cols))
-        local particle = createParticle("life", posX, posY, 1, 1)
-        grids[posX][posY].holding = particle
+        local part = particle:new("life", posX, posY, 1, 1)
+        grids[posX][posY].holding = part
     end
 
     aX, aY = love.math.random(1, 30), love.math.random(1, 30)
-    local particle = createParticle("infected", aX, aY, 1, 1, { 0, 1, 0 }, targetedMovement, spreadColor, findUninfected)
-    particle.target = "life"
-    grids[aX][aY].holding = particle
+    local part = particle:new("infected", aX, aY, 1, 1, { 0, 1, 0 }, targetedMovement, spreadColor, findUninfected)
+    part.target = "life"
+    grids[aX][aY].holding = part
 end
 
 function love.update(dt)
-
+    updateAllParticles(dt)
     if countParticleType("infected") ~= #particles then
         time = time + dt
     end
 end
 
 function love.draw()
-    for i, v in ipairs(particles) do
-      
-    end
+    drawAllParticles()
     love.graphics.setColor(1, 1, 1)
     love.graphics.print(countParticleType("infected") .. "/" .. #particles .. " | Time: " .. math.floor(time))
 end

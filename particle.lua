@@ -90,8 +90,20 @@ function particle:update(dt)
 end
 
 function particle:draw()
-    love.graphics.setColor(self.color)
+    love.graphics.setColor(self.color)  
     love.graphics.rectangle("fill", math.floor(self.gX * size), math.floor(self.gY * size), size, size)
+end
+
+function updateAllParticles(dt)
+    for i,v in ipairs(particles) do
+        v:update(dt)
+    end
+end
+
+function drawAllParticles()
+    for i,v in ipairs(particles) do
+        v:draw()
+    end
 end
 
 return particle
