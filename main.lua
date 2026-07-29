@@ -54,6 +54,15 @@ function love.update(dt)
     if countParticleType("infected") ~= #particles then
         time = time + dt
     end
+
+    local x, y = love.mouse.getPosition()
+    if love.mouse.isDown(1) then
+        local pX, pY = math.floor(x / size) + 1, math.floor(y / size) + 1
+        local part = particle:new("food", pX, pY, 1, 1, { 0, 1, 1 })
+        part.movable = false
+        grids[pX][pY].holding = part
+    end
+    
 end
 
 function love.draw()
@@ -74,7 +83,7 @@ function love.mousepressed(x, y, button)
         --         end
         --     end
         -- end
-        local pX, pY = x / size, y / size
+        local pX, pY = math.floor(x / size) + 1, math.floor(y / size) + 1
         local part = particle:new("food", pX, pY, 1, 1, { 0, 1, 1 })
         part.movable = false
         grids[pX][pY].holding = part
