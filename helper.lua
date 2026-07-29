@@ -1,8 +1,9 @@
-function nearestParticle(v, filterType)
+function particle:nearestParticle(findType)
     local best, bestDist
     for i, other in ipairs(particles) do
-        if other ~= v and (not filterType or other.type == filterType) then
-            local dx, dy = other.pX - v.pX, other.pY - v.pY
+        if other ~= self and (not findType or other.type == findType) then
+            -- Calculating shortest distance based on Distance formula
+            local dx, dy = other.pX - self.pX, other.pY - self.pY
             local dist = dx * dx + dy * dy
             if not bestDist or dist < bestDist then
                 best, bestDist = other, dist
@@ -12,14 +13,13 @@ function nearestParticle(v, filterType)
     return best
 end
 
-function findEmptyCell()
+function particle:findEmptyCell()
     for i = 1, rows do
         for j = 1, cols do
             grids[i][j] = {
                 x = (i - 1) * size,
                 y = (j - 1) * size,
                 holding = nil
-
             }
         end
     end

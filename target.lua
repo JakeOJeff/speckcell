@@ -1,7 +1,7 @@
 function particle:findUninfectedTarget(type)
     local targetX, targetY = self.pX, self.pY         -- default: don't move if no target
     if self.type == "infected" then
-        local target = nearestParticle(self, type)
+        local target = self:nearestParticle(type)
         if target then targetX, targetY = target.pX, target.pY end
     end
     return targetX, targetY
@@ -13,7 +13,7 @@ function particle:findParticleRadius(targetCenter)
     local radius = 35
     if self.type == "life" then
         if targetCenter then
-            targetX, targetY = love.math.random(self.x - radius, self.x + radius), love.math.random(self.y - radius, self.y + radius)
+            targetX, targetY = love.math.random(self.gX - radius, self.gX + radius), love.math.random(self.gY - radius, self.gY + radius)
         end
     end
     return targetX, targetY
