@@ -6,6 +6,8 @@ require "target"
 require "helper"
 require "collide"
 
+ui = require "ui"
+
 function love.load()
     wW = 1000
     wH = 1000
@@ -58,31 +60,32 @@ function love.update(dt)
     local x, y = love.mouse.getPosition()
     if love.mouse.isDown(1) then
         local pX, pY = math.floor(x / size) + 1, math.floor(y / size) + 1
-        local part = particle:new("food", pX, pY, 1, 1, {1, 1, 0 })
+        local part = particle:new("food", pX, pY, 1, 1, { 1, 1, 0 })
         part.movable = false
         grids[pX][pY].holding = part
     end
-
 end
 
 function love.draw()
     drawAllParticles()
     love.graphics.setColor(1, 1, 1)
     love.graphics.print(countParticleType("infected") .. "/" .. #particles .. " | Time: " .. math.floor(time))
+    -- ui:draw()
 end
 
 function love.mousepressed(x, y, button)
     if button == 1 then
-        -- enableInfection = not enableInfection
-        -- for i, v in ipairs(particles) do
-        --     if v.type == "life" then
-        --         if enableInfection then
-        --             v.collidable = true
-        --         else
-        --             v.collidable = false
-        --         end
-        --     end
-        -- end
+        enableInfection = not enableInfection
+        for i, v in ipairs(particles) do
+            if v.type == "life" then
+                if enableInfection then
+                    v.collidable = true
+                else
+                    v.collidable = false
+                end
+            end
+        end
+    elseif button == 2 then
         local pX, pY = math.floor(x / size) + 1, math.floor(y / size) + 1
         local part = particle:new("food", pX, pY, 1, 1, { 1, 1, 0 })
         part.movable = false
