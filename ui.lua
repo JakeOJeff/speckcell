@@ -24,7 +24,8 @@ function drawShapeGroup(table)
         love.graphics.setColor(v.color)
         if v.shape == "circle" then
             love.graphics.circle(v.type, table.x + v.x, table.y + v.y, v.radius)
-        
+        elseif v.shape == "rectangle" then
+            love.graphics.rectangle(v.type, table.x + v.x, table.y + v.y, v.width, v.height)
         end
     end
 end
