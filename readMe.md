@@ -11,3 +11,7 @@ Each grid has a particle object assigned to it. These particle objects have thre
 
 Other than these vital properties, it also has other factors which makes it lifelike. Tweaking it makes it showcase different outputs and behaviours!
 
+
+## How to use!
+
+Enter the simulation after the loading ends. Press **LMB** to start infection ( A random infection is assigned) and **RMB** to place sturdy blocks ( These do not have a feature other than freeze a few surrounding particles sometimes ). Press '**R**' to restart the simulation

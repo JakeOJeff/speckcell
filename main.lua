@@ -5,8 +5,9 @@ require "target"
 
 require "helper"
 require "collide"
-
+uiEnabled = true
 ui = require "ui"
+
 
 function love.load()
     wW = 1000
