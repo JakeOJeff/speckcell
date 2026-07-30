@@ -40,7 +40,8 @@ function resetGame()
     end
 
     time = 0
-    for i = 1, 3000 do
+    particleCount = love.math.random(300, 2500)
+    for i = 1, particleCount do
         posX = (love.math.random(1, rows))
         posY = (love.math.random(1, cols))
         local part = particle:new("life", posX, posY, 1, 1)
