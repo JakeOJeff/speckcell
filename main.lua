@@ -13,7 +13,6 @@ function love.load()
     wW = 1000
     wH = 1000
 
-    grids = {}
     rows = 500
     size = wW / rows
     cols = wH / size
@@ -21,7 +20,14 @@ function love.load()
 
     infectAudio = love.audio.newSource("audio/infect.mp3", "static")
     ui:load()
+    resetGame()
+end
+
+function resetGame()
+    particles = {}
     enableInfection = false
+    grids = {}
+
     for i = 1, rows do
         grids[i] = {}
         for j = 1, cols do
@@ -92,5 +98,7 @@ function love.mousepressed(x, y, button)
         local part = particle:new("food", pX, pY, 1, 1, { 1, 1, 0 })
         part.movable = false
         grids[pX][pY].holding = part
+    elseif button == 3 then
+        resetGame()
     end
 end
