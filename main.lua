@@ -19,7 +19,7 @@ function love.load()
     love.window.setMode(wW, wH)
 
     infectAudio = love.audio.newSource("audio/infect.mp3", "static")
-
+    ui:load()
     enableInfection = false
     for i = 1, rows do
         grids[i] = {}
@@ -53,6 +53,7 @@ end
 
 function love.update(dt)
     updateAllParticles(dt)
+    ui:update(dt)
     if countParticleType("infected") ~= #particles then
         time = time + dt
     end
@@ -70,7 +71,7 @@ function love.draw()
     drawAllParticles()
     love.graphics.setColor(1, 1, 1)
     love.graphics.print(countParticleType("infected") .. "/" .. #particles .. " | Time: " .. math.floor(time))
-    -- ui:draw()
+    ui:draw()
 end
 
 function love.mousepressed(x, y, button)
